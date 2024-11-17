@@ -1,0 +1,600 @@
+Libraries
+```{r}
+library(dplyr)
+library(readxl)
+library(readr)
+library(stringr)
+library(ggplot2)
+library(cowplot)
+library(patchwork)
+library(performance)
+library(table1)
+library(car)
+library(sandwich)
+library(lmtest)
+library(stargazer)
+```
+
+
+[BLOCK 1 & 2] DATA IMPORT & DATA FILTRATION AND CLEANSING.
+
+WGI data set 
+```{r}
+pol_stab <- read_excel("~/Desktop/wgidataset.xlsx", 
+    sheet = "Political StabilityNoViolence", 
+    range = "A15:EJ229", col_types = c("text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "numeric", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text"))
+
+pol_stab = pol_stab %>%
+  select(1, 51) 
+```
+
+
+```{r}
+gov_eff = read_excel("~/Desktop/wgidataset.xlsx", 
+    sheet = "GovernmentEffectiveness", range = "A15:EJ229", 
+    col_types = c("text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "numeric", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text"))
+
+gov_eff = gov_eff %>%
+  select(1, 51)
+```
+
+```{r}
+
+law = read_excel("~/Desktop/wgidataset.xlsx", 
+    sheet = "RuleofLaw", range = "A15:EJ229", 
+    col_types = c("text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "numeric", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text"))
+
+law = law %>%
+  select(1, 51)
+```
+
+Filtering UN countries
+
+*South Sudan did not exist before 2011 and Freedom House database does not have it so I am deleting it from other data sets too 
+```{r}
+countries = c("Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas, The", "Belgium", "Bahrain", "Bangladesh", "Barbados", "Bulgaria", "Bosnia and Herzegovina", "Belarus", "Belize", "Benin", "Bhutan", "Bolivia", "Botswana", "Brazil", "Brunei Darussalam", "Burkina Faso", "Burundi", "Cape Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo, Rep.", "Costa Rica", "Côte d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Korea, Dem. Rep.", "Congo, Dem. Rep.", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt, Arab Rep.", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia, The", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran, Islamic Rep.", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyz Republic", "Lao PDR", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia, Fed. Sts.", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Korea, Rep.", "Moldova", "Romania", "Russian Federation", "Rwanda", "St. Kitts and Nevis", "St. Lucia", "St. Vincent and the Grenadines", "Samoa", "San Marino", "São Tomé and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovak Republic", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syrian Arab Republic", "Tajikistan", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Türkiye", "Turkmenistan", "Tuvalu", "Tanzania", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Spain", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela, RB", "Vietnam", "Yemen, Rep.", "Zambia", "Zimbabwe")
+```
+
+```{r}
+wgi = inner_join(pol_stab, gov_eff, by= "Country/Territory") %>%
+  inner_join(., law)
+colnames(wgi) = c("Country", "Political Stability", "Government Effectiveness", "Rule of Law")
+```
+
+```{r}
+wgi = wgi %>%
+  filter(Country %in% countries) %>%
+  filter(Country != "South Sudan")
+```
+
+
+Freedom House Database
+
+```{r}
+freedom = read_excel("~/Desktop/Aggregate_Category_and_Subcategory_Scores_FIW_2003-2024.xlsx", 
+    sheet = "FIW06-24") %>%
+  filter(Edition == "2007") %>%
+  mutate(`Country/Territory` = as.factor(`Country/Territory`)) %>%
+  select(1, 13, 18)
+```
+
+Filtering non-UN countries 
+```{r}
+freedom_filter = freedom %>%
+  filter(!`Country/Territory` %in% countries)
+```
+
+```{r}
+not_un = c("Abkhazia", "Chechnya", "Hong Kong", "Indian Kashmir", "Israeli Occupied Territories", "Kosovo", "Nagorno-Karabakh", "Northern Cyprus", "Pakistani Kashmir", "Palestinian Authority Administered Territories", "Puerto Rico", "Taiwan", "Tibet", "Transnistria", "Western Sahara")
+
+freedom_filter = freedom_filter %>%
+  filter(!`Country/Territory` %in% not_un)
+```
+
+Renaming the remaining countries to match WGI's spelling
+```{r}
+freedom = freedom %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Bahamas", "Bahamas, The")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Brunei", "Brunei Darussalam")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Cabo Verde", "Cape Verde")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Cote d'Ivoire", "Côte d'Ivoire")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Egypt", "Egypt, Arab Rep.")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Iran", "Iran, Islamic Rep.")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Kyrgyzstan", "Kyrgyz Republic")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Laos", "Lao PDR")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Micronesia", "Micronesia, Fed. Sts.")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "North Korea", "Korea, Dem. Rep.")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Russia", "Russian Federation")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Sao Tome and Principe", "São Tomé and Principe")) %>% mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Slovakia", "Slovak Republic")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "South Korea", "Korea, Rep.")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Syria", "Syrian Arab Republic")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "The Gambia", "Gambia, The")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Turkey", "Türkiye")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Venezuela", "Venezuela, RB")) %>%
+  mutate(`Country/Territory` = str_replace_all(`Country/Territory`, "Yemen", "Yemen, Rep."))
+```
+
+Some complications occurred when I was trying to rename the two Congos, probably, due to brackets () in their initial spelling, so I had to use another function to target these two countries specifically.
+```{r}
+freedom$`Country/Territory` <- gsub("Congo \\(Brazzaville\\)", "Congo, Rep.", freedom$`Country/Territory`)
+freedom$`Country/Territory` <- gsub("Congo \\(Kinshasa\\)", "Congo, Dem. Rep.", freedom$`Country/Territory`)
+```
+
+```{r}
+freedom = freedom %>%
+  filter(`Country/Territory` %in% countries) 
+colnames(freedom) = c('Country','PR', 'CL')
+```
+
+Interim data set
+```{r}
+wgi_fh = inner_join(wgi, freedom, by = 'Country')
+```
+
+
+World Bank data set
+```{r}
+worldbank = read_csv("~/Desktop/worldbank.csv") %>%
+  select(1, 3, 4) %>%
+  slice(-193:-197)
+colnames(worldbank) = c('Country', 'Population Growth', 'GDP per capita')
+
+```
+
+Renaming countries to match with previous data
+```{r}
+worldbank_filter = worldbank %>%
+  filter(!Country %in% countries)
+```
+
+
+```{r}
+worldbank = worldbank %>%
+  mutate(Country = str_replace_all(Country, "Cabo Verde", "Cape Verde")) %>%
+  mutate(Country = str_replace_all(Country, "Cote d'Ivoire", "Côte d'Ivoire")) %>%
+  mutate(Country = str_replace_all(Country, "Czechia", "Czech Republic")) %>%
+  mutate(Country = str_replace_all(Country, "Korea, Dem. People's Rep.", "Korea, Dem. Rep.")) %>%
+  mutate(Country = str_replace_all(Country, "Sao Tome and Principe", "São Tomé and Principe")) %>%
+  mutate(Country = str_replace_all(Country, "Turkiye", "Türkiye")) %>%
+  mutate(Country = str_replace_all(Country, "Viet Nam", "Vietnam"))
+```
+
+Creating final data set
+```{r}
+final = inner_join(wgi_fh, worldbank, by = 'Country')
+```
+
+Removing NAs from the final data set
+```{r}
+final = na.omit(final)
+```
+
+
+[BLOCK 2] VIZUALIZATION.
+
+Plot № 1 [Histograms for Political Stability and Rule of Law]
+
+```{r}
+ps_plot = ggplot(final, aes(x = `Political Stability`)) + 
+  geom_histogram(aes(y = ..density..), fill = "darkblue", color = "white", alpha = 0.6, bins = 20) + 
+  geom_density(alpha = 0.2, fill = "red") + 
+  labs(x = "Political Stability",
+       y = "Density", 
+       title = "Political Stability Index\nfor the UN сountries in 2007") + 
+  theme_minimal()
+```
+
+```{r}
+rl_plot = ggplot(final, aes(x = `Rule of Law`)) + 
+  geom_histogram(aes(y = ..density..), fill = "darkgreen", color = "white", alpha = 0.6, bins = 20) + 
+  geom_density(alpha = 0.2, fill = "green") + 
+  labs(x = "Rule of Law",
+       y = "Density", 
+       title = "Rule of Law Index\nfor the UN сountries in 2007") + 
+  theme_minimal()
+```
+
+
+```{r}
+indexes_combined = plot_grid(ps_plot, rl_plot,  align = 'hv',
+  rel_heights = c(1,1),
+  rel_widths = c(2,2))
+indexes_combined
+```
+
+
+Deviding countries by regions
+```{r}
+asia = c("India", "China", "Indonesia", "Pakistan", "Bangladesh", "Japan", "Philippines", "Vietnam", "Iran, Islamic Rep.", "Türkiye", "Thailand", "Myanmar", "Korea, Rep.", "Iraq", "Afghanistan", "Saudi Arabia", "Uzbekistan", "Yemen, Rep.", "Malaysia", "Nepal", "Syrian Arab Republic", "Sri Lanka", "Kazakhstan", "Cambodia", "Jordan", "Azerbaijan", "Tajikistan", "United Arab Emirates", "Israel", "Lao PDR", "Kyrgyz Republic", "Turkmenistan", "Singapore", "Lebanon", "Oman", "Kuwait", "Georgia", "Mongolia", "Armenia", "Qatar", "Bahrain" ,"Timor-Leste", "Cyprus", "Bhutan", "Maldives", "Brunei Darussalam")
+
+length(asia)
+```
+
+```{r}
+africa = c("Nigeria", "Ethiopia", "Egypt, Arab Rep.", "Congo, Dem. Rep.", "Tanzania", "South Africa", "Kenya", "Uganda", "Sudan", "Algeria", "Morocco", "Angola", "Ghana", "Mozambique", "Madagascar", "Côte d'Ivoire", "Cameroon", "Niger", "Mali", "Burkina Faso", "Malawi", "Zambia", "Chad", "Senegal", "Zimbabwe", "Guinea", "Rwanda", "Benin", "Burundi", "Tunisia", "Togo", "Sierra Leone", "Libya", "Congo, Rep.", "Central African Republic", "Liberia", "Mauritania", "Eritrea", "Gambia, The", "Botswana", "Namibia", "Gabon", "Lesotho", "Guinea-Bissau", "Equatorial Guinea", "Mauritius", "Eswatini", "Djibouti", "Comoros", "Cape Verde", "São Tomé and Principe", "Seychelles")
+
+length(africa)
+```
+
+```{r}
+europe = c("Russian Federation", "Germany", "United Kingdom", "France", "Italy", "Spain", "Poland", "Ukraine", "Romania", "Netherlands", "Belgium", "Sweden", "Czech Republic", "Greece", "Portugal", "Hungary", "Belarus", "Austria", "Switzerland", "Serbia", "Bulgaria", "Denmark", "Slovak Republic", "Finland", "Norway", "Ireland", "Croatia", "Moldova", "Bosnia and Herzegovina", "Albania", "Lithuania", "Slovenia", "North Macedonia", "Latvia", "Estonia", "Luxembourg", "Montenegro", "Malta", "Iceland", "Andorra", "Liechtenstein")
+
+length(europe)
+```
+
+```{r}
+north = c("United States", "Mexico", "Canada", "Guatemala", "Haiti", "Dominican Republic", "Cuba", "Honduras", "Nicaragua", "El Salvador", "Costa Rica", "Panama", "Jamaica", "Trinidad and Tobago", "Bahamas, The", "Belize", "Barbados", "St. Lucia", "Grenada", "St. Vincent and the Grenadines", "Antigua and Barbuda", "Dominica", "St. Kitts and Nevis")
+
+length(north)
+```
+
+```{r}
+south = c("Brazil", "Colombia", "Argentina", "Peru", "Venezuela, RB", "Chile", "Ecuador", "Bolivia", "Paraguay", "Uruguay", "Guyana", "Suriname")
+
+length(south)
+```
+
+```{r}
+ocean = c("Australia", "Papua New Guinea", "New Zealand", "Fiji", "Solomon Islands", "Micronesia, Fed. Sts.", "Vanuatu", "Samoa", "Kiribati", "Tonga", "Tuvalu", "Marshall Islands")
+
+length(ocean)
+```
+
+
+Plot №2 [Boxplot for distribution of Political Rights Index by Region]
+
+```{r}
+by_region = final %>%
+  mutate(Region = case_when(Country %in% asia ~ 'Asia',
+                            Country %in% africa ~ 'Africa', 
+                            Country %in% north ~ 'North America',
+                            Country %in% south ~ 'South America', 
+                            Country %in% europe ~ 'Europe', 
+                            TRUE ~ 'Australia & Oceania')) %>%
+  mutate(Region = as.factor(Region))
+```
+
+```{r}
+ggplot(by_region) +   
+  geom_boxplot(aes(x = Region, y = PR, fill = Region)) +    
+  scale_fill_manual(values = c("chocolate4", "darkorange","darksalmon", "antiquewhite2", "blue2", "chartreuse4")) + 
+  labs(title = "Distribution of Political Rights Index by Region",
+       x = " ",
+       y = "Political Right Index") +
+  theme_minimal() 
+```
+
+
+Plot № 3 [Scatter plots for Government Effectiveness and GDP per capita]
+
+Creating samples 
+```{r}
+asia_sample = final %>%
+  filter(Country %in% asia)
+
+europe_sample = final %>%
+  filter(Country %in% europe)
+
+africa_sample = final %>%
+  filter(Country %in% africa)
+
+north_sample = final %>%
+  filter(Country %in% north)
+
+south_sample = final %>%
+  filter(Country %in% south)
+
+ocean_sample = final %>%
+  filter(Country %in% ocean)
+```
+
+```{r}
+asia_plot = ggplot(asia_sample, aes(x = `GDP per capita`, y = `Government Effectiveness`)) + 
+  geom_point() +
+  labs(x = "GDP per capita",
+       y = "Government\nEffectiveness", 
+       title = "Asia") + 
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold", size = 12))
+```
+
+```{r}
+europe_plot = ggplot(europe_sample, aes(x = `GDP per capita`, y = `Government Effectiveness`)) + 
+  geom_point() +
+  labs(x = "GDP per capita",
+       y = "Government\nEffectiveness", 
+       title = "Europe") + 
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold", size = 12))
+```
+
+```{r}
+africa_plot = ggplot(africa_sample, aes(x = `GDP per capita`, y = `Government Effectiveness`)) + 
+  geom_point() +
+  labs(x = "GDP per capita",
+       y = "Government\nEffectiveness", 
+       title = "Africa") + 
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold", size = 12))
+```
+
+```{r}
+north_plot = ggplot(north_sample, aes(x = `GDP per capita`, y = `Government Effectiveness`)) + 
+  geom_point() +
+  labs(x = "GDP per capita",
+       y = "Government\nEffectiveness", 
+       title = "North America") + 
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold")) +
+  theme(plot.title = element_text(face = "bold", size = 12))
+```
+
+```{r}
+south_plot = ggplot(south_sample, aes(x = `GDP per capita`, y = `Government Effectiveness`)) + 
+  geom_point()  +
+  labs(x = "GDP per capita",
+       y = "Government\nEffectiveness", 
+       title = "South America") + 
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold", size = 12))
+
+```
+
+```{r}
+ocean_plot = ggplot(ocean_sample, aes(x = `GDP per capita`, y = `Government Effectiveness`)) + 
+  geom_point() +
+  labs(x = "GDP per capita",
+       y = "Government\nEffectiveness", 
+       title = "Australia / Oceania") + 
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold", size = 12)) 
+```
+
+Combined scatter plots
+```{r}
+scatter_combined = plot_grid(asia_plot, europe_plot, africa_plot, north_plot, south_plot, ocean_plot, scale = 0.9)
+
+scatter_title = scatter_combined + plot_annotation(title = "The dependence of Government Effectiveness on GDP per capita\nin parts of the world in 2007", theme = theme(
+      plot.title = element_text(face = "bold", size = 15)
+    ))
+scatter_title
+```
+
+[BLOCK 3] MODELS
+
+1. Descriptive statistics
+```{r}
+data_table = table1(~`Government Effectiveness` + `Political Stability` + `Rule of Law` + PR + CL+ `GDP per capita` + `Population Growth`, data = final)
+data_table
+```
+
+
+
+
+
+2. OLS and tables with OLS regressions results
+```{r}
+model1 = lm(`Government Effectiveness` ~ `Political Stability` + `Rule of Law` + PR + CL+ `GDP per capita` + `Population Growth`, data = final)
+summary(model1)
+```
+
+
+```{r}
+model2 = lm(`Government Effectiveness` ~ `Political Stability` + `Rule of Law` + PR + `GDP per capita` + `Population Growth`, data = final)
+summary(model2)
+```
+```{r}
+model3 = lm(`Government Effectiveness` ~ `Political Stability` + `Rule of Law` + `GDP per capita` + `Population Growth`, data = final)
+summary(model3)
+```
+
+
+```{r}
+stargazer(model1, model2, model3, 
+          type="html",
+          model.numbers = FALSE,
+          title="Regression Results",
+          out="models_results.html")
+```
+
+
+3. Comparing the models
+
+Model3 is the best in terms of prediction because it has lowest AIC, AICc and BIC. Model1 and Model2 are a bit better in terms of explanation because their R2 is 0.002 higher than Model3's. All models have the same R2 adjusted, so we cannot determine the best one in this regard. Model1 and Model2 are also the tiny bit better in terms of RMSE as theirs is 0.002 smaller than Model3's. 
+--> However, I think that the difference on 0.002 is not that significant, considering Model3's prediction ability, so Model3 could be rightfully called the best one out of three
+
+```{r}
+compare_performance(model1, model2, model3)
+```
+
+
+4. Model3's diagnostics on multicollinearity, heteroscedasticity, outliers, influential observations, non-normality of regression residuals distribution, non-linearity of relationship between each of the IVs and the DV and interaction effect
+
+4.1 Outliers
+
+Turns out that the model has outliers in the lines 111 and 59, for which the Bonferroni p-values are 1.4269e-05 and 6.5581e-03 respectively --> <0.05
+```{r}
+outlierTest(model3)
+final[111,]
+final[59,]
+```
+
+4.2 Influential Observations
+
+Turns out that the model has an influential observation as it is more than the default Cook's distance (1.0) and reaches up till 2.0
+```{r}
+plot(model3, which = 4, cook.levels = 1)
+abline(h = 1, lty = 2, col = "red")
+```
+
+Removing the influential observation from the data set
+```{r}
+final = final[-175, ]
+```
+
+```{r}
+model3 = lm(final$`Government Effectiveness` ~ final$`Political Stability` + final$`Rule of Law` + final$`GDP per capita` + final$`Population Growth`)
+summary(model3)
+```
+
+
+4.3 Diagnostics for heteroscedasticity
+
+Both lines are shaky, we can assume the problem of non-constant DV variance aka heteroscedasticity but cannot determine for sure just from the plot
+```{r}
+spreadLevelPlot(model3)
+```
+The p-value for heteroscedasticity is 4.312e-05, so < 0.05 there is heteroscedasticity in the model
+```{r}
+ncvTest(model3)
+```
+
+Heteroscedasticity fix
+```{r}
+model3_fixed_hetero = vcovHC(model3)
+coeftest(model3, model3_fixed_hetero)
+```
+
+4.4 Diagnostics for multicollinearity
+
+If the VIF value is smaller than 10, there is no multicollinearity in the model and in this case all three values are smaller than 10 --> no multicollinearity
+```{r}
+vif(model3)
+```
+
+4.5 Diagnostics for non-normality of regression residuals distribution
+
+There are point on the plot that are beyond the boundaries of the two lines which are confidence intervals --> we can assume the violation of the assumption about the normal distribution 
+```{r}
+qqPlot(model3, main="Q-Q Plot for non-corrected model")
+```
+
+The p value for `lambda = (1)` is less than 0.05 (2.22e-16 -->  the distribution of regression residuals' is not normal
+```{r}
+summary(powerTransform(final$`Government Effectiveness`^2))
+```
+
+
+4.5 Diagnostics for non-linearity
+```{r}
+car::crPlots(model3)
+```
+
+```{r}
+final_positive <- final %>%
+  filter_if(is.numeric, all_vars(. > 0))
+```
+
+```{r}
+boxTidwell(`Government Effectiveness` ~ `Political Stability`, data = final_positive)
+
+boxTidwell(`Government Effectiveness` ~ `Rule of Law`, data = final_positive)
+
+boxTidwell(`Government Effectiveness` ~ `GDP per capita`, data = final_positive)
+
+boxTidwell(`Government Effectiveness` ~ `Population Growth`, data = final_positive)
+```
+
+
+4.6 Interaction effect
+```{r}
+mod.additive = lm(`Government Effectiveness` ~ `Political Stability` + `GDP per capita` + `Rule of Law` + `Population Growth`, data = final)
+mod.interaction = lm(`Government Effectiveness` ~ `Political Stability`* `GDP per capita`, data = final)
+```
+
+Comparing additive and interaction models
+
+Additive model is still better
+```{r}
+compare_performance(mod.additive, mod.interaction)
+```
+
+
+
+
